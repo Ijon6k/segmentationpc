@@ -6,6 +6,43 @@ interface UploadDropzoneProps {
   onError: (errorMsg: string) => void;
 }
 
+function SegmentationSvg() {
+  return (
+    <svg
+      viewBox="0 0 240 160"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="absolute inset-0 w-full h-full pointer-events-none select-none"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      <defs>
+        <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+          <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#7dd3fc" strokeWidth="0.5" strokeOpacity="0.08" />
+        </pattern>
+      </defs>
+
+      <rect x="0" y="0" width="240" height="160" fill="url(#grid)" />
+
+      <g opacity="0.04">
+        <rect x="32" y="28" width="56" height="44" rx="4" fill="#7dd3fc" />
+        <rect x="100" y="28" width="44" height="56" rx="4" fill="#38bdf8" />
+        <rect x="156" y="36" width="48" height="36" rx="4" fill="#7dd3fc" />
+        <rect x="24" y="88" width="48" height="44" rx="4" fill="#38bdf8" />
+        <rect x="88" y="92" width="64" height="36" rx="4" fill="#7dd3fc" />
+        <rect x="168" y="84" width="48" height="52" rx="4" fill="#38bdf8" />
+      </g>
+
+      <g opacity="0.03">
+        <path d="M0 80 L240 80" stroke="#7dd3fc" strokeWidth="0.5" strokeDasharray="4 4" />
+        <path d="M120 0 L120 160" stroke="#7dd3fc" strokeWidth="0.5" strokeDasharray="4 4" />
+        <path d="M60 0 L60 160" stroke="#7dd3fc" strokeWidth="0.5" strokeDasharray="2 6" />
+        <path d="M180 0 L180 160" stroke="#7dd3fc" strokeWidth="0.5" strokeDasharray="2 6" />
+      </g>
+    </svg>
+  );
+}
+
 export function UploadDropzone({ onImageSelected, onError }: UploadDropzoneProps) {
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,12 +103,14 @@ export function UploadDropzone({ onImageSelected, onError }: UploadDropzoneProps
       onDragLeave={handleDrag}
       onDrop={handleDrop}
       onClick={onButtonClick}
-      className={`w-full max-w-2xl mx-auto flex flex-col items-center justify-center border-2 border-dashed rounded-md p-12 text-center cursor-pointer transition-all duration-200 ${
+      className={`relative w-full max-w-2xl mx-auto flex flex-col items-center justify-center border-2 rounded-md p-12 text-center cursor-pointer transition-all duration-300 overflow-hidden ${
         isDragActive
-          ? "border-foreground bg-secondary-bg scale-[0.99]"
-          : "border-border-custom hover:border-foreground/40 hover:bg-secondary-bg/50"
+          ? "border-accent bg-accent-subtle scale-[0.99]"
+          : "border-dashed border-border-custom hover:border-accent/50 hover:bg-accent-subtle/40"
       }`}
     >
+      <SegmentationSvg />
+
       <input
         ref={fileInputRef}
         type="file"
@@ -79,16 +118,26 @@ export function UploadDropzone({ onImageSelected, onError }: UploadDropzoneProps
         className="hidden"
         onChange={handleChange}
       />
-      <div className="w-12 h-12 rounded-full bg-secondary-bg border border-border-custom flex items-center justify-center mb-4 text-foreground/75">
+      <div className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ${
+        isDragActive
+          ? "bg-accent text-white scale-110"
+          : "bg-accent-subtle border border-accent-border text-accent-foreground"
+      }`}>
         <Upload className="w-5 h-5" />
       </div>
-      <h3 className="text-lg font-medium text-foreground mb-1">
-        Unggah Gambar
+      <h3 className={`relative z-10 text-lg font-medium mb-1 transition-colors duration-300 ${
+        isDragActive ? "text-accent-foreground" : "text-foreground"
+      }`}>
+        {isDragActive ? "Lepaskan gambar di sini" : "Unggah Gambar"}
       </h3>
-      <p className="text-sm text-muted-text mb-4 max-w-sm">
+      <p className="relative z-10 text-sm text-muted-text mb-4 max-w-sm">
         Seret dan lepas gambar Anda di sini, atau klik untuk mencari berkas dari komputer.
       </p>
-      <div className="text-xs text-muted-text/80 bg-secondary-bg border border-border-custom px-3 py-1.5 rounded-md">
+      <div className={`relative z-10 text-xs px-3 py-1.5 rounded-md transition-all duration-300 ${
+        isDragActive
+          ? "bg-accent text-white"
+          : "text-muted-text/80 bg-secondary-bg border border-border-custom"
+      }`}>
         Mendukung PNG, JPG, JPEG (Maks. 10MB)
       </div>
     </div>

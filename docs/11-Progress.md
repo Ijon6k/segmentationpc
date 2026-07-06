@@ -1,8 +1,8 @@
 # 11 - Project Progress & Technical Overview
 
-> **Version**: 1.2  
+> **Version**: 1.3  
 > **Last Updated**: 2026-07-06  
-> **Status**: Phase 9 & Polish Complete (End-to-End Segmentation, Zoom Modals & Technical Reversion)
+> **Status**: All Phases Complete + Dynamic Analysis Engine + Desktop Layout Revision
 
 ---
 
@@ -11,6 +11,8 @@
 Aplikasi **Image Segmentation Comparison** telah diselesaikan sepenuhnya dengan arsitektur multi-container yang ramping dan optimal. Proyek ini berjalan di dalam container Docker menggunakan Docker Compose, sehingga tidak memerlukan instalasi runtime Node.js/Bun atau Python di sistem host.
 
 Seluruh repositori telah diatur dengan Git, infrastruktur container telah dioptimalkan secara mendalam, UI telah dipoles dengan desain flat bebas bayangan, sudut melengkung kecil rapi, teks berbahasa Indonesia, dan peninjauan citra interaktif *Click to Zoom*.
+
+Sistem analisis telah direfaktor dari rekomendasi statis menjadi **observation-based rule engine** yang sepenuhnya deterministik — rekomendasi algoritma berubah secara dinamis berdasarkan karakteristik citra yang diuji.
 
 ---
 
@@ -48,17 +50,18 @@ Berdasarkan panduan `docs/06-Development-Phases.md`, status implementasi saat in
     *   Pembuatan komponen `ComparisonTable` di frontend untuk menampilkan ringkasan data algoritma, detail cara kerja, dan waktu eksekusi riil.
     *   Implementasi logika penandaan otomatis untuk algoritma tercepat (*fastest badge*) pada baris tabel metrics.
     *   Integrasi tabel perbandingan ke dalam halaman utama Next.js di bawah grid segmentasi.
-*   **Phase 8 — Analysis**: **[COMPLETED]**
-    *   Pembuatan `AnalysisService` di backend: rule-based evaluation engine untuk menganalisis metrics latensi performa algoritma dan membuat rekomendasi akademis dinamis.
-    *   Penyusunan rasionalisasi perbandingan efisiensi algoritma threshold (Otsu/Global) terhadap clustering (K-Means) dan topografi (Watershed).
-    *   Pembuatan komponen `AnalysisCard` di frontend dengan visualisasi recommended method dan ikon medali.
-*   **Phase 9 & Polish — UI Polish & Zoom Modals**: **[COMPLETED]**
+*   **Phase 8 — Analysis (Refactored)**: **[COMPLETED]**
+    *   Pembuatan modular analysis engine menggantikan rekomendasi statis. Lihat **Section 3B** untuk detail arsitektur.
+    *   Rekomendasi algoritma bersifat dinamis — berubah berdasarkan metrik terukur dari citra yang diunggah.
+    *   Tidak ada algoritma yang di-hardcode sebagai pemenang; sepenuhnya deterministik tanpa AI/LLM.
+*   **Phase 9 & Polish — UI Polish, Zoom Modals & Desktop Layout**: **[COMPLETED]**
     *   Penerjemahan teks halaman ke Bahasa Indonesia dengan tetap mempertahankan penamaan istilah teknis bahasa Inggris standar (seperti *Global Thresholding*, *Adaptive Thresholding*, *Otsu's Thresholding*, *Region Growing*, *Watershed Segmentation*, *K-Means Clustering*).
     *   Penghapusan seluruh drop shadows (`shadow-sm`, `shadow`) untuk mengimplementasikan *academic flat layout*.
     *   Penyesuaian radius sudut border menjadi kecil rapi (`rounded-md` untuk kartu, `rounded-sm` untuk badge dan tombol).
     *   Implementasi fitur *Click to Zoom* di frontend: overlay bertuliskan `"Click to Zoom"` saat hover gambar asli/hasil pemrosesan, dan modal pop-up interaktif untuk melihat gambar resolusi tinggi beserta judul metodenya saat diklik.
     *   Pembuatan komponen `SkeletonCard` untuk placeholder pulsa pemuatan.
     *   Pembuatan dokumen [README.md](file:///home/pixy/Projects/segmentasipc/README.md) di direktori utama.
+    *   **Layout Revision**: Perluasan area konten dari `max-w-4xl` (~896px) menjadi `max-w-[1600px]` untuk pemanfaatan layar desktop yang optimal, dengan padding horizontal `px-6 lg:px-8`.
 
 ---
 
@@ -83,9 +86,9 @@ Sistem beroperasi di bawah payung Docker Compose dengan diagram alur komunikasi 
    └───────────────┘         └───────────────┘
 ```
 
-### Component Details
+### A. Component Details
 
-#### A. Reverse Proxy (Nginx)
+#### A1. Reverse Proxy (Nginx)
 *   **Peran**: Single Entry Point untuk browser client. Menghilangkan masalah CORS dan mengamankan container internal.
 *   **Ports**: Mengekspos port `3333` ke host.
 *   **Routing Rules**:
@@ -93,7 +96,7 @@ Sistem beroperasi di bawah payung Docker Compose dengan diagram alur komunikasi 
     *   `/api` -> di-proxy ke `http://backend:8000` (FastAPI Application)
 *   **Konfigurasi file**: [nginx/nginx.conf](file:///home/pixy/Projects/segmentasipc/nginx/nginx.conf) dan [nginx/Dockerfile](file:///home/pixy/Projects/segmentasipc/nginx/Dockerfile).
 
-#### B. Frontend (Next.js 16)
+#### A2. Frontend (Next.js 16)
 *   **Peran**: Presentation layer, bertugas untuk menerima input gambar dari user, menampilkan visualisasi pre-processing, grid segmentasi, tabel perbandingan, dan summary analisis.
 *   **Ports**: Port internal `3000` (tidak diekspos ke host).
 *   **Cara Kerja**:
@@ -102,13 +105,110 @@ Sistem beroperasi di bawah payung Docker Compose dengan diagram alur komunikasi 
     *   Container berjalan menggunakan runtime Bun (`bun server.js`).
 *   **Konfigurasi file**: [frontend/Dockerfile](file:///home/pixy/Projects/segmentasipc/frontend/Dockerfile) dan [frontend/package.json](file:///home/pixy/Projects/segmentasipc/frontend/package.json).
 
-#### C. Backend (FastAPI)
-*   **Peran**: Core processing engine. Menangani validasi berkas, decoding gambar, kalkulasi pre-processing (Grayscale, Gaussian Blur), eksekusi algoritma segmentasi, dan perhitungan metrics waktu eksekusi.
+#### A3. Backend (FastAPI)
+*   **Peran**: Core processing engine. Menangani validasi berkas, decoding gambar, kalkulasi pre-processing (Grayscale, Gaussian Blur), eksekusi algoritma segmentasi, ekstraksi metrik mask, dan analisis rekomendasi berbasis aturan.
 *   **Ports**: Port internal `8000` (tidak diekspos ke host).
 *   **Cara Kerja**:
     *   FastAPI diinisialisasi menggunakan standard logging dan lifecycle lifespan context manager di [backend/app/main.py](file:///home/pixy/Projects/segmentasipc/backend/app/main.py).
     *   Mendefinisikan endpoint `/api/health` di [backend/app/routes/health.py](file:///home/pixy/Projects/segmentasipc/backend/app/routes/health.py) untuk integrasi healthcheck container.
 *   **Konfigurasi file**: [backend/Dockerfile](file:///home/pixy/Projects/segmentasipc/backend/Dockerfile) dan [backend/requirements.txt](file:///home/pixy/Projects/segmentasipc/backend/requirements.txt).
+
+---
+
+### B. Dynamic Analysis Engine — Arsitektur & Cara Kerja
+
+Sistem analisis menggunakan arsitektur modular 4-layer yang sepenuhnya deterministik (tanpa AI/LLM/ML):
+
+```
+segment.py (route)
+    │
+    ├── MaskMetricsService       ← Mengekstrak metrik observasi dari mask
+    │
+    └── AnalysisService          ← Orchestrator
+            ├── RuleEngine       ← Scoring berbasis observasi
+            ├── TemplateEngine   ← Generator kalimat dari template
+            └── AnalysisBuilder  ← Merangkai laporan terstruktur
+```
+
+#### B1. MaskMetricsService
+
+**File**: [mask_metrics.py](file:///home/pixy/Projects/segmentasipc/backend/app/services/mask_metrics.py)
+
+Mengekstrak metrik kuantitatif dari setiap mask segmentasi menggunakan OpenCV:
+
+| Metrik | Deskripsi | Metode |
+|--------|-----------|--------|
+| `foreground_ratio` | Persentase piksel foreground | `cv2.countNonZero / total pixels` |
+| `connected_components` | Jumlah objek terpisah yang terdeteksi | `cv2.connectedComponents` |
+| `contour_count` | Jumlah kontur yang terdeteksi | `cv2.findContours` |
+| `noise_ratio` | Rasio kontur kecil (<50px) terhadap total kontur | Hitung kontur berarea kecil |
+
+Setiap algoritma menghasilkan satu `AlgorithmMetrics` dataclass yang berisi metrik di atas beserta `execution_time_ms`.
+
+#### B2. RuleEngine — Observation-Based Scoring
+
+**File**: [rule_engine.py](file:///home/pixy/Projects/segmentasipc/backend/app/services/analysis/rule_engine.py)
+
+Sistem scoring deterministik — setiap algoritma dinilai berdasarkan **temuan observasi yang terukur**, bukan asumsi tetap. Tidak ada algoritma yang di-hardcode sebagai pemenang.
+
+| Observasi | Kondisi | Skor |
+|-----------|---------|------|
+| Fast execution | `time < median × 0.5` | +10 |
+| Slow execution | `time > median × 2.0` | −10 |
+| Low noise | `noise_ratio < 0.1` | +20 |
+| Moderate noise | `0.1 ≤ noise_ratio < 0.4` | +5 |
+| Excessive noise | `noise_ratio ≥ 0.4` | −20 |
+| Object mostly preserved | `1 ≤ components ≤ 5` | +20 |
+| Fragmented object | `components > 20` | −20 |
+| Possible over-segmentation | `components > 50` | −15 |
+| Possible under-segmentation | `fg_ratio < 0.02 or > 0.98` | −15 |
+| Stable segmentation | `0.05 ≤ fg_ratio ≤ 0.90` | +10 |
+
+**Prinsip desain**:
+*   Tidak mengasumsikan "foreground ratio ideal" yang universal.
+*   Tidak mengasumsikan lebih sedikit komponen selalu lebih baik.
+*   Hanya mengevaluasi **temuan yang dapat diukur** — menghasilkan *findings*, bukan *absolute truths*.
+*   Algoritma dengan skor total tertinggi menjadi rekomendasi untuk citra tersebut.
+
+#### B3. TemplateEngine — Generasi Teks Dinamis
+
+**File**: [template_engine.py](file:///home/pixy/Projects/segmentasipc/backend/app/services/analysis/template_engine.py)
+
+Menghasilkan kalimat rekomendasi dari template reusable berdasarkan observasi aktual. Teks **selalu berbeda** tergantung gambar yang diuji.
+
+**Prinsip teks**:
+*   Tidak mengekspos skor internal (tidak ada angka "poin" yang tampil ke pengguna).
+*   Selalu menyebut "pada citra yang diuji" untuk menghindari klaim rekomendasi universal.
+*   Menjelaskan **mengapa** algoritma direkomendasikan berdasarkan metrik terukur.
+
+Contoh output:
+
+> "Pada citra yang diuji, metode Watershed direkomendasikan karena menghasilkan preservasi objek utama yang baik dan tingkat noise yang rendah, meskipun memiliki waktu komputasi yang lebih tinggi dibanding beberapa algoritma lainnya."
+
+**Komponen teks yang dihasilkan**:
+*   `reason`: 2-3 kalimat penjelasan mengapa algoritma direkomendasikan + perbandingan dengan runner-up.
+*   `strengths`: Daftar kelebihan berdasarkan observasi positif + karakteristik algoritma.
+*   `weaknesses`: Daftar kelemahan berdasarkan observasi negatif + karakteristik algoritma.
+*   `executionSummary`: Urutan kecepatan eksekusi semua algoritma.
+*   `conclusion`: Satu kalimat penutup tentang hasil pengujian citra tersebut.
+
+#### B4. AnalysisBuilder — Perangkai Laporan
+
+**File**: [analysis_builder.py](file:///home/pixy/Projects/segmentasipc/backend/app/services/analysis/analysis_builder.py)
+
+Layer tipis yang menghubungkan output `RuleEngine` ke `TemplateEngine`, memproduksi objek `AnalysisSchema` final yang dikirim ke frontend.
+
+#### B5. AnalysisSchema — Struktur Data Respons
+
+```python
+class AnalysisSchema(BaseModel):
+    bestAlgorithm: str        # Nama algoritma terbaik
+    reason: str               # Penjelasan dinamis berbasis metrik
+    strengths: List[str]      # Daftar kelebihan
+    weaknesses: List[str]     # Daftar kelemahan
+    executionSummary: str     # Urutan kecepatan eksekusi
+    conclusion: str           # Kalimat penutup
+```
 
 ---
 
