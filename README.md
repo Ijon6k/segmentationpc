@@ -28,8 +28,8 @@ Sistem ini memenuhi seluruh kriteria tersebut secara penuh dengan menyediakan pr
 
 Berikut adalah dokumentasi tampilan visual aplikasi:
 
-### 1. Area Unggah Gambar
-![Unggah Gambar](./preview/1.png)
+### 1. Gambar Terpilih
+![Gambar Terpilih](./preview/1.png)
 
 ### 2. Tahap Pra-pemrosesan (Grayscale & Gaussian Blur)
 ![Pra-pemrosesan](./preview/2.png)
@@ -37,8 +37,11 @@ Berikut adalah dokumentasi tampilan visual aplikasi:
 ### 3. Hasil Segmentasi (Perbandingan 6 Algoritma)
 ![Hasil Segmentasi](./preview/3.png)
 
-### 4. Metrik Performa & Analisis Rekomendasi
-![Metrik & Analisis](./preview/4.png)
+### 4. Metrik Performa & Waktu Pemrosesan
+![Metrik Performa](./preview/5.png)
+
+### 5. Analisis Hasil Segmentasi
+![Analisis Hasil](./preview/4.png)
 
 ---
 
