@@ -51,13 +51,12 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-secondary-bg flex flex-col font-sans">
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-accent-subtle/60" aria-hidden="true" />
+    <div className="relative min-h-screen bg-background flex flex-col font-sans pb-16">
       <AppHeader />
 
-      <main className="relative flex-1 w-full max-w-[1600px] mx-auto py-12 px-6 lg:px-8 flex flex-col justify-start">
+      <main className="relative z-10 flex-1 w-full max-w-[1600px] mx-auto py-12 px-6 lg:px-8 flex flex-col justify-start">
         {error && (
-          <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-md flex items-start gap-3">
+          <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-md flex items-start gap-3 relative z-10">
             <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
             <div>
               <h4 className="font-semibold text-sm">Kesalahan Pemrosesan</h4>
@@ -68,25 +67,28 @@ export default function Home() {
 
         <div className="w-full py-8 flex flex-col items-center justify-center">
           {!selectedFile ? (
-            <div className="w-full flex flex-col gap-6 items-center animate-fade-in-up">
-              <div className="text-center max-w-md mb-4">
-                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            <div className="w-full flex flex-col gap-8 items-center animate-fade-in-up">
+              <div className="text-center max-w-xl flex flex-col items-center gap-3">
+                <h2 className="text-4xl font-semibold tracking-tight text-foreground">
                   Pilih gambar untuk dianalisis
                 </h2>
-                <p className="text-sm text-muted-text mt-1">
-                  Unggah citra digital untuk memproses segmentasi menggunakan 6 algoritma berbeda.
+                <p className="text-sm text-muted-text max-w-md mt-1 leading-relaxed">
+                  Unggah citra digital untuk memproses segmentasi menggunakan 6 algoritma berbeda dan membandingkan akurasi serta performa secara langsung.
                 </p>
               </div>
-              <UploadDropzone
-                onImageSelected={handleImageSelected}
-                onError={(msg) => alert(msg)}
-              />
+              
+              <div className="w-full">
+                <UploadDropzone
+                  onImageSelected={handleImageSelected}
+                  onError={(msg) => alert(msg)}
+                />
+              </div>
             </div>
           ) : (
             <div className="w-full flex flex-col gap-6 items-center animate-fade-in-up">
-              <div className="text-center max-w-md mb-2">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                  Citra Workspace Terpilih
+              <div className="text-center max-w-md mb-2 flex flex-col items-center gap-2">
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                  Gambar Terpilih
                 </h2>
                 <p className="text-sm text-muted-text mt-1">
                   {isLoading ? "Menjalankan algoritma visi komputer..." : "Analisis berhasil diselesaikan!"}
@@ -124,39 +126,36 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Preprocessing Grid Output */}
+              {/* Output Results Wrapper with Downward Gradient */}
               {result && !isLoading && (
-                <div className="w-full animate-fade-in-up" style={{ animationDelay: "0ms" }}>
-                  <PreprocessingGrid
-                    grayscale={result.preprocessing.grayscale}
-                    gaussianBlur={result.preprocessing.gaussianBlur}
-                    onZoom={(src, title) => setZoomImage({ src, title })}
-                  />
-                </div>
-              )}
+                <div className="w-full flex flex-col gap-12 mt-8 bg-gradient-to-b from-[#f0f9ff]/70 via-[#f8fafc]/30 to-transparent p-6 md:p-8 rounded-md border border-sky-100/20">
+                  {/* Preprocessing Grid Output */}
+                  <div className="w-full animate-fade-in-up" style={{ animationDelay: "0ms" }}>
+                    <PreprocessingGrid
+                      grayscale={result.preprocessing.grayscale}
+                      gaussianBlur={result.preprocessing.gaussianBlur}
+                      onZoom={(src, title) => setZoomImage({ src, title })}
+                    />
+                  </div>
 
-              {/* Segmentation Grid Output */}
-              {result && !isLoading && (
-                <div className="w-full animate-fade-in-up" style={{ animationDelay: "100ms" }}>
-                  <SegmentationGrid
-                    segmentation={result.segmentation}
-                    metrics={result.metrics}
-                    onZoom={(src, title) => setZoomImage({ src, title })}
-                  />
-                </div>
-              )}
+                  {/* Segmentation Grid Output */}
+                  <div className="w-full animate-fade-in-up" style={{ animationDelay: "100ms" }}>
+                    <SegmentationGrid
+                      segmentation={result.segmentation}
+                      metrics={result.metrics}
+                      onZoom={(src, title) => setZoomImage({ src, title })}
+                    />
+                  </div>
 
-              {/* Performance Table Output */}
-              {result && !isLoading && (
-                <div className="w-full animate-fade-in-up" style={{ animationDelay: "200ms" }}>
-                  <ComparisonTable metrics={result.metrics} />
-                </div>
-              )}
+                  {/* Performance Table Output */}
+                  <div className="w-full animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+                    <ComparisonTable metrics={result.metrics} />
+                  </div>
 
-              {/* Recommendation Analysis Output */}
-              {result && !isLoading && (
-                <div className="w-full animate-fade-in-up" style={{ animationDelay: "300ms" }}>
-                  <AnalysisCard analysis={result.analysis} />
+                  {/* Recommendation Analysis Output */}
+                  <div className="w-full animate-fade-in-up" style={{ animationDelay: "300ms" }}>
+                    <AnalysisCard analysis={result.analysis} />
+                  </div>
                 </div>
               )}
             </div>

@@ -1,62 +1,145 @@
-# Image Segmentation Comparison Tool
+# Pembanding Algoritma Segmentasi Citra
 
-A minimalist, academic web application to compare **6 classical image segmentation algorithms** side-by-side. The application is completely containerized and runs using Docker Compose.
+Aplikasi berbasis web untuk melakukan segmentasi citra digital secara komparatif menggunakan 6 algoritma klasik. Sistem ini dirancang untuk memproses, membandingkan, dan menganalisis performa segmentasi secara langsung.
 
----
-
-## 🚀 Features
-
-1.  **Academic UI**: Built with a clean, typography-focused, spacious aesthetic utilizing *Inter Tight* font.
-2.  **Drag & Drop Upload**: Support for JPG, JPEG, and PNG images up to 10MB, with client and server-side validation.
-3.  **Pre-processing Pipeline**: Displays intermediate steps of Grayscale Conversion and Gaussian Blur.
-4.  **6 Segmentation Algorithms**:
-    *   *Global Thresholding* (fixed threshold of 127)
-    *   *Adaptive Thresholding* (local Gaussian windowing)
-    *   *Otsu's Thresholding* (automatic threshold selection)
-    *   *Region Growing* (BFS seed pixel grouping optimized to sub-50ms)
-    *   *Marker-Controlled Watershed* (distance-transform based marking)
-    *   *K-Means Clustering* ($K=3$ color grouping)
-5.  **Comparative Metrics**: A side-by-side performance table displaying execution times in milliseconds, automatically highlighting the fastest algorithm.
-6.  **Rule-Based Recommendation Card**: An academic rationale selecting and describing the best algorithm dynamically.
-7.  **UX Polish**: Loading states are mapped using animated skeletons that hold the original preview layout.
+Sistem dibangun menggunakan arsitektur modern yang memisahkan frontend (Next.js + Bun) dan backend (FastAPI + Python), serta dapat dijalankan menggunakan kontainer Docker Compose maupun secara mandiri di sistem lokal (host).
 
 ---
 
-## 🛠️ Architecture
+## Latar Belakang Proyek
 
-The stack consists of three isolated services communicating over a private Docker network (`segmentation-network`):
+Proyek ini dibangun untuk memenuhi tugas besar mata kuliah **Pengolahan Citra** dengan ketentuan spesifikasi sebagai berikut:
 
-*   **Ingress Proxy (`nginx`)**: Directs external requests on host port `3333` to corresponding internal services.
-*   **Presentation Layer (`frontend`)**: Next.js 16 compiled in standalone mode running via Bun.
-*   **Computational Engine (`backend`)**: FastAPI running on Python 3.13-slim with OpenCV headless packages.
+*   **Topik**: Segmentasi Citra
+*   **Algoritma Segmentasi** (Minimal 5 algoritma):
+    1.  Thresholding & Adaptive Thresholding
+    2.  Otsu's Thresholding
+    3.  Region Growing
+    4.  Watershed Segmentation
+    5.  K-Means Clustering
+*   **Alur Pemrosesan Sistem**:
+    `Input Citra` -> `Pre-processing` -> `Segmentasi` -> `Output Hasil` -> `Perbandingan Hasil` -> `Analisis Akurasi`
+
+Sistem ini memenuhi seluruh kriteria tersebut secara penuh dengan menyediakan pratinjau pemrosesan langkah demi langkah (*step-by-step*) beserta analisis rekomendasi metode terbaik berdasarkan karakteristik gambar.
 
 ---
 
-## 🖥️ How to Run
+## Pratinjau Antarmuka
 
-### Prerequisites
-Make sure you have **Docker** and **Docker Compose** installed on your system.
+Berikut adalah dokumentasi tampilan visual aplikasi:
 
-### Build and Start Stack
-In the root directory, execute:
+### 1. Area Unggah Gambar
+![Unggah Gambar](./preview/1.png)
+
+### 2. Tahap Pra-pemrosesan (Grayscale & Gaussian Blur)
+![Pra-pemrosesan](./preview/2.png)
+
+### 3. Hasil Segmentasi (Perbandingan 6 Algoritma)
+![Hasil Segmentasi](./preview/3.png)
+
+### 4. Metrik Performa & Analisis Rekomendasi
+![Metrik & Analisis](./preview/4.png)
+
+---
+
+## Cara Menjalankan Menggunakan Docker Compose
+
+Metode ini direkomendasikan karena seluruh ketergantungan sistem (*dependency*) seperti Node.js/Bun, Python, dan Nginx sudah terisolasi di dalam kontainer.
+
+### 1. Klon Repositori dan Masuk ke Direktori
+```bash
+git clone https://github.com/Ijon6k/segmentationpc.git
+cd segmentationpc
+```
+
+### 2. Jalankan Kontainer
 ```bash
 docker compose up -d --build --force-recreate
 ```
 
-### Access Application
-Open your web browser and navigate to:
+### 3. Akses Aplikasi
+Buka browser dan akses alamat berikut:
 ```
 http://localhost:3333/
 ```
 
-### Check Logs
-To monitor internal server logs, run:
-```bash
-docker compose logs -f
-```
-
-### Stop Application
-To take down all containers and networks:
+Untuk menghentikan kontainer, jalankan:
 ```bash
 docker compose down
 ```
+
+---
+
+## Cara Menjalankan Secara Terpisah (Tanpa Docker)
+
+Jika Anda ingin melakukan pengembangan atau menjalankan backend dan frontend secara mandiri di luar kontainer Docker, ikuti langkah berikut.
+
+### Prasyarat Lokal
+*   Python 3.12 atau 3.13 terinstal di sistem Anda.
+*   Node.js (versi 18+) atau Bun terinstal di sistem Anda.
+
+### A. Menjalankan Backend (FastAPI)
+
+Backend FastAPI berfungsi untuk memproses manipulasi gambar melalui pustaka OpenCV dan mengembalikan data dalam bentuk Base64 beserta metrik performanya.
+
+1.  Masuk ke direktori backend:
+    ```bash
+    cd backend
+    ```
+
+2.  Buat virtual environment Python dan aktifkan:
+    ```bash
+    # Di Linux / macOS:
+    python3 -m venv venv
+    source venv/bin/activate
+
+    # Di Windows (Command Prompt):
+    python -m venv venv
+    venv\Scripts\activate
+    ```
+
+3.  Instal seluruh library yang diperlukan:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  Jalankan server pengembangan FastAPI menggunakan Uvicorn:
+    ```bash
+    uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+    ```
+    *API lokal sekarang aktif di `http://127.0.0.1:8000`.*
+
+### B. Menjalankan Frontend (Next.js)
+
+Frontend Next.js dibangun menggunakan TypeScript dan Tailwind CSS untuk menyajikan antarmuka visual yang responsif.
+
+1.  Buka terminal baru, masuk ke direktori frontend:
+    ```bash
+    cd frontend
+    ```
+
+2.  Instal dependensi Node/Bun:
+    ```bash
+    # Menggunakan Bun (direkomendasikan):
+    bun install
+
+    # Atau menggunakan npm:
+    npm install
+    ```
+
+3.  Buat konfigurasi environment variable agar frontend mengarah ke server API FastAPI lokal (bukan ke proxy Nginx):
+    ```bash
+    # Buat file baru bernama .env.local di dalam folder frontend/
+    # Isi file dengan baris berikut:
+    NEXT_PUBLIC_API_BASE=http://127.0.0.1:8000/api
+    ```
+
+4.  Jalankan server pengembangan Next.js:
+    ```bash
+    # Menggunakan Bun:
+    bun run dev
+
+    # Atau menggunakan npm:
+    npm run dev
+    ```
+    *Akses frontend melalui browser di `http://localhost:3000`.*

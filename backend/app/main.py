@@ -1,6 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import health, segment
 
@@ -18,6 +19,15 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down FastAPI application...")
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+
+# Allow CORS for development running outside Nginx/Docker
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routes
 app.include_router(health.router, prefix=settings.API_PREFIX)

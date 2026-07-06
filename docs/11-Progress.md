@@ -57,11 +57,7 @@ Berdasarkan panduan `docs/06-Development-Phases.md`, status implementasi saat in
 *   **Phase 9 & Polish — UI Polish, Zoom Modals & Desktop Layout**: **[COMPLETED]**
     *   Penerjemahan teks halaman ke Bahasa Indonesia dengan tetap mempertahankan penamaan istilah teknis bahasa Inggris standar (seperti *Global Thresholding*, *Adaptive Thresholding*, *Otsu's Thresholding*, *Region Growing*, *Watershed Segmentation*, *K-Means Clustering*).
     *   Penghapusan seluruh drop shadows (`shadow-sm`, `shadow`) untuk mengimplementasikan *academic flat layout*.
-    *   Penyesuaian radius sudut border menjadi kecil rapi (`rounded-md` untuk kartu, `rounded-sm` untuk badge dan tombol).
-    *   Implementasi fitur *Click to Zoom* di frontend: overlay bertuliskan `"Click to Zoom"` saat hover gambar asli/hasil pemrosesan, dan modal pop-up interaktif untuk melihat gambar resolusi tinggi beserta judul metodenya saat diklik.
-    *   Pembuatan komponen `SkeletonCard` untuk placeholder pulsa pemuatan.
-    *   Pembuatan dokumen [README.md](file:///home/pixy/Projects/segmentasipc/README.md) di direktori utama.
-    *   **Layout Revision**: Perluasan area konten dari `max-w-4xl` (~896px) menjadi `max-w-[1600px]` untuk pemanfaatan layar desktop yang optimal, dengan padding horizontal `px-6 lg:px-8`.
+    *   **Hero Polish**: Penyesuaian ke latar belakang minimalis berwarna putih murni (`bg-background`) pada bagian atas (Header & area Upload/Dropzone/Preview). Efek degradasi warna biru muda lembut (`from-[#f0f9ff]/70`) diterapkan di dalam container pembungkus hasil segmentasi (`div.bg-gradient-to-b`) yang dimulai persis setelah area gambar terpilih, memberikan batas visual yang jelas dan elegan untuk komponen hasil analisis di bagian bawah. Penamaan status pratinjau diganti menjadi *"Gambar Terpilih"*, peniadaan logo ikon di pojok kiri atas AppHeader, serta penghapusan chip badge di atas judul utama.
 
 ---
 
