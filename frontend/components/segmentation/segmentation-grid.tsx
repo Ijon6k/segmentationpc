@@ -1,5 +1,6 @@
 import React from "react";
 import { SegmentationSchema, MetricItem } from "../../types/api";
+import { ZoomIn } from "lucide-react";
 
 interface AlgorithmInfo {
   key: string;
@@ -43,9 +44,10 @@ const ALGORITHMS: AlgorithmInfo[] = [
 interface SegmentationGridProps {
   segmentation: SegmentationSchema;
   metrics: MetricItem[];
+  onZoom: (src: string, title: string) => void;
 }
 
-export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProps) {
+export function SegmentationGrid({ segmentation, metrics, onZoom }: SegmentationGridProps) {
   const getMetric = (name: string) => {
     return metrics.find(
       (m) => m.algorithm.toLowerCase() === name.toLowerCase() ||
@@ -98,14 +100,25 @@ export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProp
                 )}
               </div>
               <div className="p-6 bg-secondary-bg/25 flex-1 flex justify-center items-center h-[220px] overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageSrc}
-                  alt={`${algo.name} Mask`}
-                  className={`max-h-[180px] w-auto h-auto object-contain rounded-md border border-border-custom bg-white transition-all duration-300 ${
-                    isPlaceholder ? "opacity-40 grayscale" : "opacity-100"
-                  }`}
-                />
+                <div 
+                  onClick={() => onZoom(imageSrc, algo.name)}
+                  className="relative group cursor-zoom-in overflow-hidden rounded-md border border-border-custom bg-white shadow-sm"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imageSrc}
+                    alt={`${algo.name} Mask`}
+                    className={`max-h-[180px] w-auto h-auto object-contain transition-all duration-300 ${
+                      isPlaceholder ? "opacity-40 grayscale" : "opacity-100"
+                    }`}
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-150">
+                    <span className="text-white text-xs font-medium bg-black/60 px-3 py-1.5 rounded-sm flex items-center gap-1.5">
+                      <ZoomIn className="w-3.5 h-3.5" />
+                      Click to Zoom
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           );

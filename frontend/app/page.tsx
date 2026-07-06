@@ -9,7 +9,7 @@ import { SegmentationGrid } from "@/components/segmentation/segmentation-grid";
 import { ComparisonTable } from "@/components/comparison/comparison-table";
 import { AnalysisCard } from "@/components/analysis/analysis-card";
 import { useSegmentation } from "@/hooks/use-segmentation";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, X } from "lucide-react";
 
 function SkeletonCard({ height = "180px" }: { height?: string }) {
   return (
@@ -30,6 +30,7 @@ function SkeletonCard({ height = "180px" }: { height?: string }) {
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [zoomImage, setZoomImage] = useState<{ src: string; title: string } | null>(null);
   
   const {
     isLoading,
@@ -91,7 +92,11 @@ export default function Home() {
                 </p>
               </div>
 
-              <UploadPreview file={selectedFile} onClear={handleClearImage} />
+              <UploadPreview 
+                file={selectedFile} 
+                onClear={handleClearImage} 
+                onZoom={(src) => setZoomImage({ src, title: "Citra Asli" })}
+              />
 
               {/* Skeletons for Results Area while Loading */}
               {isLoading && (
@@ -123,6 +128,7 @@ export default function Home() {
                 <PreprocessingGrid
                   grayscale={result.preprocessing.grayscale}
                   gaussianBlur={result.preprocessing.gaussianBlur}
+                  onZoom={(src, title) => setZoomImage({ src, title })}
                 />
               )}
 
@@ -131,6 +137,7 @@ export default function Home() {
                 <SegmentationGrid
                   segmentation={result.segmentation}
                   metrics={result.metrics}
+                  onZoom={(src, title) => setZoomImage({ src, title })}
                 />
               )}
 
@@ -147,6 +154,40 @@ export default function Home() {
           )}
         </div>
       </main>
+
+      {/* Centralized Zoom Modal Overlay */}
+      {zoomImage && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 cursor-zoom-out"
+          onClick={() => setZoomImage(null)}
+        >
+          <div 
+            className="bg-background border border-border-custom rounded-md overflow-hidden max-w-3xl w-full flex flex-col cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-border-custom bg-secondary-bg flex items-center justify-between">
+              <span className="text-sm font-semibold text-foreground">
+                {zoomImage.title}
+              </span>
+              <button
+                onClick={() => setZoomImage(null)}
+                className="p-1 rounded-sm border border-border-custom bg-background hover:bg-secondary-bg hover:text-foreground text-muted-text transition-colors cursor-pointer"
+                title="Tutup"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-6 bg-secondary-bg/25 flex justify-center items-center max-h-[75vh] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={zoomImage.src}
+                alt={zoomImage.title}
+                className="max-h-[65vh] w-auto h-auto object-contain rounded-md border border-border-custom bg-white"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

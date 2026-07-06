@@ -88,32 +88,32 @@ async def segment_image(image: UploadFile = File(...)):
             MetricItem(
                 algorithm="Threshold",
                 executionTimeMs=round(time_global, 3),
-                notes="Pambang batas global dengan nilai potong tetap 127."
+                notes="Global Thresholding dengan nilai cutoff tetap 127."
             ),
             MetricItem(
                 algorithm="Adaptive Threshold",
                 executionTimeMs=round(time_adaptive, 3),
-                notes="Pambang batas lokal menggunakan jendela Gaussian untuk menghitung nilai ambang adaptif."
+                notes="Adaptive Thresholding menggunakan jendela Gaussian untuk menghitung nilai ambang lokal secara dinamis."
             ),
             MetricItem(
                 algorithm="Otsu",
                 executionTimeMs=round(time_otsu, 3),
-                notes="Pambang batas otomatis berdasarkan analisis histogram bimodal gambar."
+                notes="Otsu's Thresholding secara otomatis menentukan nilai ambang berdasarkan analisis histogram bimodal gambar."
             ),
             MetricItem(
                 algorithm="Region Growing",
                 executionTimeMs=round(time_rg, 3),
-                notes="Pertumbuhan region berbasis benih dari pusat gambar dengan ambang selisih intensitas 20."
+                notes="Region Growing berbasis seed pixel dari pusat gambar dengan batas toleransi selisih intensitas 20."
             ),
             MetricItem(
                 algorithm="Watershed",
                 executionTimeMs=round(time_ws, 3),
-                notes="Segmentasi berbasis morfologi watershed dengan penanda otomatis dari distance transform."
+                notes="Watershed Segmentation dengan marker otomatis menggunakan distance transform."
             ),
             MetricItem(
                 algorithm="K-Means",
                 executionTimeMs=round(time_km, 3),
-                notes="Klasterisasi piksel ruang warna menjadi K=3 kelompok (segmen) warna."
+                notes="K-Means Clustering pada ruang warna BGR dengan parameter K=3 kelompok warna."
             )
         ],
         analysis=AnalysisService.analyze([

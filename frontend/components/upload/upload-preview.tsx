@@ -1,12 +1,13 @@
 import React from "react";
-import { X, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon, ZoomIn } from "lucide-react";
 
 interface UploadPreviewProps {
   file: File;
   onClear: () => void;
+  onZoom: (src: string) => void;
 }
 
-export function UploadPreview({ file, onClear }: UploadPreviewProps) {
+export function UploadPreview({ file, onClear, onZoom }: UploadPreviewProps) {
   const imageUrl = URL.createObjectURL(file);
 
   const formatFileSize = (bytes: number) => {
@@ -38,12 +39,23 @@ export function UploadPreview({ file, onClear }: UploadPreviewProps) {
         </button>
       </div>
       <div className="p-6 bg-secondary-bg/25 flex justify-center items-center max-h-[400px] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt="Upload Preview"
-          className="max-h-[350px] w-auto h-auto object-contain rounded-md border border-border-custom bg-white"
-        />
+        <div 
+          onClick={() => onZoom(imageUrl)}
+          className="relative group cursor-zoom-in overflow-hidden rounded-md border border-border-custom bg-white shadow-sm"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt="Upload Preview"
+            className="max-h-[350px] w-auto h-auto object-contain"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-150">
+            <span className="text-white text-xs font-medium bg-black/60 px-3 py-1.5 rounded-sm flex items-center gap-1.5">
+              <ZoomIn className="w-3.5 h-3.5" />
+              Click to Zoom
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
