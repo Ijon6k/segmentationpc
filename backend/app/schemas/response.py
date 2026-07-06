@@ -23,6 +23,10 @@ class MetricItem(BaseModel):
 class AnalysisSchema(BaseModel):
     bestAlgorithm: str
     reason: str
+    strengths: List[str]
+    weaknesses: List[str]
+    executionSummary: str
+    conclusion: str
 
 class SegmentationData(BaseModel):
     original: str

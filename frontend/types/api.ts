@@ -23,6 +23,10 @@ export interface MetricItem {
 export interface AnalysisSchema {
   bestAlgorithm: string;
   reason: string;
+  strengths: string[];
+  weaknesses: string[];
+  executionSummary: string;
+  conclusion: string;
 }
 
 export interface SegmentationData {

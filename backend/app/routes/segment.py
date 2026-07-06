@@ -6,8 +6,9 @@ from app.services.image_service import ImageService
 from app.services.preprocessing_service import PreprocessingService
 from app.services.segmentation.threshold import ThresholdService
 from app.services.segmentation.advanced import AdvancedService
-from app.services.analysis_service import AnalysisService
-from app.schemas.response import SegmentationResponse, SegmentationData, PreprocessingSchema, SegmentationSchema, MetricItem, AnalysisSchema
+from app.services.mask_metrics import MaskMetricsService
+from app.services.analysis import AnalysisService
+from app.schemas.response import SegmentationResponse, SegmentationData, PreprocessingSchema, SegmentationSchema, MetricItem
 
 router = APIRouter()
 
@@ -57,6 +58,16 @@ async def segment_image(image: UploadFile = File(...)):
     start_km = time.perf_counter()
     km_mask = AdvancedService.kmeans_clustering(resized_orig, k=3)
     time_km = (time.perf_counter() - start_km) * 1000
+    
+    # Extract mask metrics for analysis
+    algo_metrics = [
+        MaskMetricsService.extract("Threshold", global_mask, time_global),
+        MaskMetricsService.extract("Adaptive Threshold", adaptive_mask, time_adaptive),
+        MaskMetricsService.extract("Otsu", otsu_mask, time_otsu),
+        MaskMetricsService.extract("Region Growing", rg_mask, time_rg),
+        MaskMetricsService.extract("Watershed", ws_mask, time_ws),
+        MaskMetricsService.extract("K-Means", km_mask, time_km),
+    ]
     
     # Encode processed images to Base64
     original_base64 = encode_image_to_base64(resized_orig)
@@ -116,14 +127,8 @@ async def segment_image(image: UploadFile = File(...)):
                 notes="K-Means Clustering pada ruang warna BGR dengan parameter K=3 kelompok warna."
             )
         ],
-        analysis=AnalysisService.analyze([
-            MetricItem(algorithm="Threshold", executionTimeMs=time_global, notes=""),
-            MetricItem(algorithm="Adaptive Threshold", executionTimeMs=time_adaptive, notes=""),
-            MetricItem(algorithm="Otsu", executionTimeMs=time_otsu, notes=""),
-            MetricItem(algorithm="Region Growing", executionTimeMs=time_rg, notes=""),
-            MetricItem(algorithm="Watershed", executionTimeMs=time_ws, notes=""),
-            MetricItem(algorithm="K-Means", executionTimeMs=time_km, notes="")
-        ])
+        analysis=AnalysisService.analyze(algo_metrics)
     )
     
     return SegmentationResponse(success=True, data=response_data)
+
