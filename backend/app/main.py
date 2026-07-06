@@ -2,7 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.config import settings
-from app.routes import health
+from app.routes import health, segment
 
 # Setup logging
 logging.basicConfig(
@@ -21,3 +21,4 @@ app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 # Include routes
 app.include_router(health.router, prefix=settings.API_PREFIX)
+app.include_router(segment.router, prefix=settings.API_PREFIX)

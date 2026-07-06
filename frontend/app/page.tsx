@@ -1,65 +1,153 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
+import { AppHeader } from "@/components/header/app-header";
+import { UploadDropzone } from "@/components/upload/upload-dropzone";
+import { UploadPreview } from "@/components/upload/upload-preview";
+import { PreprocessingGrid } from "@/components/preprocessing/preprocessing-grid";
+import { SegmentationGrid } from "@/components/segmentation/segmentation-grid";
+import { ComparisonTable } from "@/components/comparison/comparison-table";
+import { AnalysisCard } from "@/components/analysis/analysis-card";
+import { useSegmentation } from "@/hooks/use-segmentation";
+import { AlertCircle, Loader2 } from "lucide-react";
+
+function SkeletonCard({ height = "180px" }: { height?: string }) {
+  return (
+    <div className="bg-background border border-border-custom rounded-2xl p-4 shadow-sm animate-pulse flex flex-col gap-3">
+      <div className="flex flex-col gap-1.5">
+        <div className="h-4 bg-foreground/10 rounded w-1/3"></div>
+        <div className="h-3 bg-foreground/5 rounded w-2/3"></div>
+      </div>
+      <div 
+        className="w-full bg-foreground/5 rounded-lg border border-border-custom flex items-center justify-center text-muted-text/30"
+        style={{ height }}
+      >
+        <Loader2 className="w-5 h-5 animate-spin" />
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
+  const {
+    isLoading,
+    error,
+    result,
+    triggerSegmentation,
+    reset
+  } = useSegmentation();
+
+  const handleImageSelected = (file: File) => {
+    setSelectedFile(file);
+    triggerSegmentation(file);
+  };
+
+  const handleClearImage = () => {
+    setSelectedFile(null);
+    reset();
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <div className="min-h-screen bg-secondary-bg flex flex-col font-sans pb-16">
+      <AppHeader />
+
+      <main className="flex-1 w-full max-w-4xl mx-auto py-12 px-6 flex flex-col justify-start">
+        {error && (
+          <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+            <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+            <div>
+              <h4 className="font-semibold text-sm">Processing Error</h4>
+              <p className="text-xs mt-0.5">{error}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="w-full py-8 flex flex-col items-center justify-center">
+          {!selectedFile ? (
+            <div className="w-full flex flex-col gap-6 items-center">
+              <div className="text-center max-w-md mb-4">
+                <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                  Select an image to analyze
+                </h2>
+                <p className="text-sm text-muted-text mt-1">
+                  Upload any digital image to extract segmentations using 6 classical algorithms.
+                </p>
+              </div>
+              <UploadDropzone
+                onImageSelected={handleImageSelected}
+                onError={(msg) => alert(msg)}
+              />
+            </div>
+          ) : (
+            <div className="w-full flex flex-col gap-6 items-center">
+              <div className="text-center max-w-md mb-2">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                  Selected Workspace Image
+                </h2>
+                <p className="text-sm text-muted-text mt-1">
+                  {isLoading ? "Running computer vision algorithms..." : "Analysis successfully processed!"}
+                </p>
+              </div>
+
+              <UploadPreview file={selectedFile} onClear={handleClearImage} />
+
+              {/* Skeletons for Results Area while Loading */}
+              {isLoading && (
+                <div className="w-full flex flex-col gap-10 mt-8">
+                  <div className="flex flex-col gap-4">
+                    <div className="h-6 bg-foreground/10 rounded w-1/4"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <SkeletonCard height="250px" />
+                      <SkeletonCard height="250px" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    <div className="h-6 bg-foreground/10 rounded w-1/4"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <SkeletonCard height="180px" />
+                      <SkeletonCard height="180px" />
+                      <SkeletonCard height="180px" />
+                      <SkeletonCard height="180px" />
+                      <SkeletonCard height="180px" />
+                      <SkeletonCard height="180px" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Preprocessing Grid Output */}
+              {result && !isLoading && (
+                <PreprocessingGrid
+                  grayscale={result.preprocessing.grayscale}
+                  gaussianBlur={result.preprocessing.gaussianBlur}
+                />
+              )}
+
+              {/* Segmentation Grid Output */}
+              {result && !isLoading && (
+                <SegmentationGrid
+                  segmentation={result.segmentation}
+                  metrics={result.metrics}
+                />
+              )}
+
+              {/* Performance Table Output */}
+              {result && !isLoading && (
+                <ComparisonTable metrics={result.metrics} />
+              )}
+
+              {/* Recommendation Analysis Output */}
+              {result && !isLoading && (
+                <AnalysisCard analysis={result.analysis} />
+              )}
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
+
