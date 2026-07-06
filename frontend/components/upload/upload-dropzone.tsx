@@ -66,7 +66,7 @@ export function UploadDropzone({ onImageSelected, onError }: UploadDropzoneProps
       onDragLeave={handleDrag}
       onDrop={handleDrop}
       onClick={onButtonClick}
-      className={`w-full max-w-2xl mx-auto flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-200 ${
+      className={`w-full max-w-2xl mx-auto flex flex-col items-center justify-center border-2 border-dashed rounded-md p-12 text-center cursor-pointer transition-all duration-200 ${
         isDragActive
           ? "border-foreground bg-secondary-bg scale-[0.99]"
           : "border-border-custom hover:border-foreground/40 hover:bg-secondary-bg/50"
@@ -83,13 +83,13 @@ export function UploadDropzone({ onImageSelected, onError }: UploadDropzoneProps
         <Upload className="w-5 h-5" />
       </div>
       <h3 className="text-lg font-medium text-foreground mb-1">
-        Upload Image
+        Unggah Gambar
       </h3>
       <p className="text-sm text-muted-text mb-4 max-w-sm">
-        Drag and drop your image here, or click to browse files from your computer.
+        Seret dan lepas gambar Anda di sini, atau klik untuk mencari berkas dari komputer.
       </p>
-      <div className="text-xs text-muted-text/80 bg-secondary-bg border border-border-custom px-3 py-1.5 rounded-lg">
-        Supports PNG, JPG, JPEG (Max 10MB)
+      <div className="text-xs text-muted-text/80 bg-secondary-bg border border-border-custom px-3 py-1.5 rounded-md">
+        Mendukung PNG, JPG, JPEG (Maks. 10MB)
       </div>
     </div>
   );

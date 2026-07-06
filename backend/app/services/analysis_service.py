@@ -14,12 +14,12 @@ class AnalysisService:
         rg_time = metric_map.get("Region Growing", 4.0)
         
         reason = (
-            f"Otsu's Thresholding is recommended as the optimal choice. It processed the image in {otsu_time:.3f} ms. "
-            f"While Global Thresholding is slightly faster, Otsu automatically calculates the optimal threshold value "
-            "from the bimodal histogram without requiring manual input. Advanced algorithms like K-Means "
-            f"({kmeans_time:.3f} ms) and Watershed ({ws_time:.3f} ms) show significantly higher latency and require "
-            f"complex parameters (e.g. cluster count K=3 or seed inputs), whereas Otsu runs automatically, making it "
-            "highly robust and efficient for real-time document binarization and foreground extraction."
+            f"Segmentasi Otsu direkomendasikan sebagai pilihan terbaik. Metode ini memproses gambar dalam waktu {otsu_time:.3f} ms. "
+            f"Meskipun Thresholding Global sedikit lebih cepat, Otsu secara otomatis menghitung nilai ambang batas (threshold) optimal "
+            "berdasarkan histogram bimodal gambar tanpa memerlukan input parameter manual. Algoritma tingkat lanjut seperti K-Means "
+            f"({kmeans_time:.3f} ms) dan Watershed ({ws_time:.3f} ms) memerlukan waktu komputasi yang jauh lebih lama dan membutuhkan "
+            f"pengaturan parameter yang rumit (seperti jumlah klaster K=3 atau marker benih), sedangkan Otsu bekerja secara otomatis, "
+            "menjadikannya sangat efisien dan konsisten untuk pemisahan objek dari latar belakang."
         )
         
         return AnalysisSchema(bestAlgorithm=best_algo, reason=reason)

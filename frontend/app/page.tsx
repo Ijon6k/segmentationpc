@@ -13,13 +13,13 @@ import { AlertCircle, Loader2 } from "lucide-react";
 
 function SkeletonCard({ height = "180px" }: { height?: string }) {
   return (
-    <div className="bg-background border border-border-custom rounded-2xl p-4 shadow-sm animate-pulse flex flex-col gap-3">
+    <div className="bg-background border border-border-custom rounded-md p-4 animate-pulse flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <div className="h-4 bg-foreground/10 rounded w-1/3"></div>
         <div className="h-3 bg-foreground/5 rounded w-2/3"></div>
       </div>
       <div 
-        className="w-full bg-foreground/5 rounded-lg border border-border-custom flex items-center justify-center text-muted-text/30"
+        className="w-full bg-foreground/5 rounded-md border border-border-custom flex items-center justify-center text-muted-text/30"
         style={{ height }}
       >
         <Loader2 className="w-5 h-5 animate-spin" />
@@ -55,10 +55,10 @@ export default function Home() {
 
       <main className="flex-1 w-full max-w-4xl mx-auto py-12 px-6 flex flex-col justify-start">
         {error && (
-          <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-md flex items-start gap-3">
             <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
             <div>
-              <h4 className="font-semibold text-sm">Processing Error</h4>
+              <h4 className="font-semibold text-sm">Kesalahan Pemrosesan</h4>
               <p className="text-xs mt-0.5">{error}</p>
             </div>
           </div>
@@ -69,10 +69,10 @@ export default function Home() {
             <div className="w-full flex flex-col gap-6 items-center">
               <div className="text-center max-w-md mb-4">
                 <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Select an image to analyze
+                  Pilih gambar untuk dianalisis
                 </h2>
                 <p className="text-sm text-muted-text mt-1">
-                  Upload any digital image to extract segmentations using 6 classical algorithms.
+                  Unggah citra digital untuk memproses segmentasi menggunakan 6 algoritma berbeda.
                 </p>
               </div>
               <UploadDropzone
@@ -84,10 +84,10 @@ export default function Home() {
             <div className="w-full flex flex-col gap-6 items-center">
               <div className="text-center max-w-md mb-2">
                 <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                  Selected Workspace Image
+                  Citra Workspace Terpilih
                 </h2>
                 <p className="text-sm text-muted-text mt-1">
-                  {isLoading ? "Running computer vision algorithms..." : "Analysis successfully processed!"}
+                  {isLoading ? "Menjalankan algoritma visi komputer..." : "Analisis berhasil diselesaikan!"}
                 </p>
               </div>
 

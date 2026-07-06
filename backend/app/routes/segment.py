@@ -88,32 +88,32 @@ async def segment_image(image: UploadFile = File(...)):
             MetricItem(
                 algorithm="Threshold",
                 executionTimeMs=round(time_global, 3),
-                notes="Global thresholding with a fixed cut-off value of 127."
+                notes="Pambang batas global dengan nilai potong tetap 127."
             ),
             MetricItem(
                 algorithm="Adaptive Threshold",
                 executionTimeMs=round(time_adaptive, 3),
-                notes="Local thresholding using a Gaussian window to calculate local thresholds."
+                notes="Pambang batas lokal menggunakan jendela Gaussian untuk menghitung nilai ambang adaptif."
             ),
             MetricItem(
                 algorithm="Otsu",
                 executionTimeMs=round(time_otsu, 3),
-                notes="Global thresholding with an automatic cut-off derived from the image histogram."
+                notes="Pambang batas otomatis berdasarkan analisis histogram bimodal gambar."
             ),
             MetricItem(
                 algorithm="Region Growing",
                 executionTimeMs=round(time_rg, 3),
-                notes="Seed-based growing from the image center with intensity delta thresh of 20."
+                notes="Pertumbuhan region berbasis benih dari pusat gambar dengan ambang selisih intensitas 20."
             ),
             MetricItem(
                 algorithm="Watershed",
                 executionTimeMs=round(time_ws, 3),
-                notes="Marker-controlled watershed using distance transform labeling."
+                notes="Segmentasi berbasis morfologi watershed dengan penanda otomatis dari distance transform."
             ),
             MetricItem(
                 algorithm="K-Means",
                 executionTimeMs=round(time_km, 3),
-                notes="Color-space K-Means clustering with K=3 partitions."
+                notes="Klasterisasi piksel ruang warna menjadi K=3 kelompok (segmen) warna."
             )
         ],
         analysis=AnalysisService.analyze([

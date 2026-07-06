@@ -18,7 +18,7 @@ export function UploadPreview({ file, onClear }: UploadPreviewProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-background border border-border-custom rounded-2xl overflow-hidden shadow-sm">
+    <div className="w-full max-w-2xl mx-auto bg-background border border-border-custom rounded-md overflow-hidden">
       <div className="p-4 border-b border-border-custom bg-secondary-bg flex items-center justify-between">
         <div className="flex items-center gap-2 text-foreground/80">
           <ImageIcon className="w-4 h-4 text-muted-text" />
@@ -31,8 +31,8 @@ export function UploadPreview({ file, onClear }: UploadPreviewProps) {
         </div>
         <button
           onClick={onClear}
-          className="p-1 rounded-lg border border-border-custom bg-background hover:bg-secondary-bg hover:text-foreground text-muted-text transition-colors cursor-pointer"
-          title="Remove Image"
+          className="p-1 rounded-sm border border-border-custom bg-background hover:bg-secondary-bg hover:text-foreground text-muted-text transition-colors cursor-pointer"
+          title="Hapus Gambar"
         >
           <X className="w-4 h-4" />
         </button>
@@ -42,7 +42,7 @@ export function UploadPreview({ file, onClear }: UploadPreviewProps) {
         <img
           src={imageUrl}
           alt="Upload Preview"
-          className="max-h-[350px] w-auto h-auto object-contain rounded-lg border border-border-custom bg-white shadow-sm"
+          className="max-h-[350px] w-auto h-auto object-contain rounded-md border border-border-custom bg-white"
         />
       </div>
     </div>

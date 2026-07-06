@@ -11,32 +11,32 @@ const ALGORITHMS: AlgorithmInfo[] = [
   {
     key: "threshold",
     name: "Global Threshold",
-    description: "Converts grayscale to binary using a static intensity cutoff (127).",
+    description: "Mengubah grayscale menjadi biner menggunakan batas intensitas tetap (127).",
   },
   {
     key: "adaptiveThreshold",
     name: "Adaptive Threshold",
-    description: "Calculates thresholds locally for small pixel neighborhoods.",
+    description: "Menghitung batas ambang secara lokal untuk setiap area kecil piksel.",
   },
   {
     key: "otsu",
     name: "Otsu's Thresholding",
-    description: "Calculates threshold automatically by minimizing class variance.",
+    description: "Mencari ambang batas optimal otomatis berdasarkan varians histogram.",
   },
   {
     key: "regionGrowing",
     name: "Region Growing",
-    description: "Groups pixels with similar intensities starting from seed points.",
+    description: "Mengelompokkan piksel dengan intensitas serupa mulai dari koordinat benih pusat.",
   },
   {
     key: "watershed",
     name: "Watershed Segmentation",
-    description: "Treats grayscale image as topography, flooding from marker seeds.",
+    description: "Segmentasi topologi morfologi dengan menandai batas gradien gambar.",
   },
   {
     key: "kmeans",
     name: "K-Means Clustering",
-    description: "Partitions pixels into K color/intensity cluster segments.",
+    description: "Mengelompokkan warna piksel menjadi K=3 segmen wilayah warna utama.",
   },
 ];
 
@@ -62,10 +62,10 @@ export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProp
     <div className="w-full max-w-4xl mx-auto mt-12 flex flex-col gap-6">
       <div className="border-b border-border-custom pb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
-          Segmentation Results
+          Hasil Segmentasi Citra
         </h3>
         <span className="text-xs text-muted-text font-medium uppercase tracking-wider bg-secondary-bg border border-border-custom px-2.5 py-1 rounded-md">
-          Algorithm Comparison
+          Komparasi Algoritma
         </span>
       </div>
 
@@ -78,7 +78,7 @@ export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProp
           return (
             <div
               key={algo.key}
-              className="bg-background border border-border-custom rounded-2xl overflow-hidden shadow-sm flex flex-col hover:border-foreground/20 transition-all duration-200"
+              className="bg-background border border-border-custom rounded-md overflow-hidden flex flex-col hover:border-foreground/20 transition-all duration-200"
             >
               <div className="p-4 border-b border-border-custom bg-secondary-bg flex items-center justify-between gap-2">
                 <div className="flex flex-col min-w-0">
@@ -88,7 +88,7 @@ export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProp
                   </p>
                 </div>
                 {metric && (
-                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-sm border shrink-0 ${
                     isPlaceholder
                       ? "bg-slate-50 border-slate-200/60 text-slate-400 text-[9px] italic"
                       : "bg-foreground/5 border-foreground/10 text-foreground font-semibold"
@@ -102,7 +102,7 @@ export function SegmentationGrid({ segmentation, metrics }: SegmentationGridProp
                 <img
                   src={imageSrc}
                   alt={`${algo.name} Mask`}
-                  className={`max-h-[180px] w-auto h-auto object-contain rounded-lg border border-border-custom bg-white shadow-sm transition-all duration-300 ${
+                  className={`max-h-[180px] w-auto h-auto object-contain rounded-md border border-border-custom bg-white transition-all duration-300 ${
                     isPlaceholder ? "opacity-40 grayscale" : "opacity-100"
                   }`}
                 />

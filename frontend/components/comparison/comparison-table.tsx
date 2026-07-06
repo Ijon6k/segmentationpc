@@ -14,21 +14,21 @@ export function ComparisonTable({ metrics }: ComparisonTableProps) {
     <div className="w-full max-w-4xl mx-auto mt-12 flex flex-col gap-6">
       <div className="border-b border-border-custom pb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
-          Performance Metrics
+          Metrik Performa & Waktu Pemrosesan
         </h3>
         <span className="text-xs text-muted-text font-medium uppercase tracking-wider bg-secondary-bg border border-border-custom px-2.5 py-1 rounded-md">
-          Phase 7 Evaluation
+          Evaluasi Komparasi
         </span>
       </div>
 
-      <div className="border border-border-custom rounded-2xl overflow-hidden shadow-sm bg-background">
+      <div className="border border-border-custom rounded-md overflow-hidden bg-background">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-secondary-bg border-b border-border-custom text-xs font-semibold uppercase tracking-wider text-muted-text">
-                <th className="py-4 px-6">Algorithm</th>
-                <th className="py-4 px-6 text-right">Execution Time</th>
-                <th className="py-4 px-6">Performance Details</th>
+                <th className="py-4 px-6">Algoritma</th>
+                <th className="py-4 px-6 text-right">Waktu Eksekusi</th>
+                <th className="py-4 px-6">Detail Performa & Cara Kerja</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-custom text-sm">
@@ -45,8 +45,8 @@ export function ComparisonTable({ metrics }: ComparisonTableProps) {
                           {metric.executionTimeMs.toFixed(3)} ms
                         </span>
                         {isFastest && (
-                          <span className="bg-green-50 border border-green-200 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-md uppercase tracking-wide">
-                            Fastest
+                          <span className="bg-green-50 border border-green-200 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+                            Tercepat
                           </span>
                         )}
                       </div>
