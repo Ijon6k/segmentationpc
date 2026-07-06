@@ -1,0 +1,47 @@
+services:
+  backend:
+    build: ./backend
+    container_name: segmentation-backend
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - segmentation-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  frontend:
+    build: ./frontend
+    container_name: segmentation-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NEXT_PUBLIC_API_BASE=/api
+    networks:
+      - segmentation-network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  nginx:
+    build: ./nginx
+    container_name: segmentation-nginx
+    ports:
+      - "8080:80"
+    networks:
+      - segmentation-network
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+
+networks:
+  segmentation-network:
+    driver: bridge
