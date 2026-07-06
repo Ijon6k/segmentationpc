@@ -8,10 +8,10 @@ interface AnalysisCardProps {
 
 export function AnalysisCard({ analysis }: AnalysisCardProps) {
   return (
-    <div className="w-full max-w-4xl mx-auto mt-12 flex flex-col gap-6">
+    <div className="w-full mt-12 flex flex-col gap-6">
       <div className="border-b border-border-custom pb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
-          Rekomendasi & Analisis Akurasi
+          Analisis Hasil Segmentasi
         </h3>
         <span className="text-xs text-muted-text font-medium uppercase tracking-wider bg-secondary-bg border border-border-custom px-2.5 py-1 rounded-md">
           Analisis Hasil

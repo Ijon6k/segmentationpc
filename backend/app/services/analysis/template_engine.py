@@ -20,74 +20,102 @@ ALGO_WEAKNESSES = {
     "K-Means": "Waktu komputasi lebih tinggi dan hasil bergantung pada parameter K.",
 }
 
+# Observation tag → trait phrase for composing the reason sentence
+_TRAIT_PHRASES = {
+    "fast_execution": "waktu komputasi yang cepat",
+    "low_noise": "tingkat noise yang rendah",
+    "moderate_noise": "tingkat noise yang moderat",
+    "object_preserved": "preservasi objek utama yang baik",
+    "stable_segmentation": "segmentasi yang stabil",
+}
+
+_WEAKNESS_PHRASES = {
+    "slow_execution": "waktu komputasi yang lebih tinggi dibanding beberapa algoritma lainnya",
+    "excessive_noise": "tingkat noise yang tinggi pada hasil segmentasi",
+    "fragmented_object": "fragmentasi objek menjadi beberapa bagian",
+    "over_segmentation": "potensi over-segmentation",
+    "under_segmentation": "potensi under-segmentation",
+}
+
 
 class TemplateEngine:
     @staticmethod
     def generate_reason(winner: ScoredAlgorithm, runner_up: ScoredAlgorithm) -> str:
-        """Generate a 2-3 sentence reason from observations."""
-        parts = []
+        """Generate an image-specific explanation without exposing internal scores."""
+        positive_traits = []
+        negative_traits = []
 
-        # Lead sentence
-        parts.append(
-            f"{winner.algorithm} direkomendasikan berdasarkan evaluasi multifaktor "
-            f"dengan skor {winner.total_score} poin."
-        )
+        for obs in winner.observations:
+            if obs.score_delta > 0 and obs.tag in _TRAIT_PHRASES:
+                positive_traits.append(_TRAIT_PHRASES[obs.tag])
+            elif obs.score_delta < 0 and obs.tag in _WEAKNESS_PHRASES:
+                negative_traits.append(_WEAKNESS_PHRASES[obs.tag])
 
-        # Highlight top positive observation
-        positives = [o for o in winner.observations if o.score_delta > 0]
-        if positives:
-            best_obs = max(positives, key=lambda o: o.score_delta)
-            parts.append(best_obs.description)
+        # Build the main sentence
+        if positive_traits:
+            traits_text = TemplateEngine._join_list(positive_traits)
+            reason = (
+                f"Pada citra yang diuji, metode {winner.algorithm} direkomendasikan "
+                f"karena menghasilkan {traits_text}"
+            )
+        else:
+            reason = (
+                f"Pada citra yang diuji, metode {winner.algorithm} direkomendasikan "
+                f"sebagai opsi terbaik di antara algoritma yang dievaluasi"
+            )
 
-        # Comparison with runner-up
+        # Add caveat if there are negative traits
+        if negative_traits:
+            caveat_text = TemplateEngine._join_list(negative_traits)
+            reason += f", meskipun memiliki {caveat_text}"
+
+        reason += "."
+
+        # Add runner-up comparison
         if runner_up and runner_up.algorithm != winner.algorithm:
-            diff = winner.total_score - runner_up.total_score
-            if diff <= 5:
-                parts.append(
-                    f"Selisih skor sangat tipis dengan {runner_up.algorithm} "
-                    f"({runner_up.total_score} poin) — keduanya memberikan hasil kompetitif."
-                )
-            else:
-                parts.append(
-                    f"Dibandingkan {runner_up.algorithm} ({runner_up.total_score} poin), "
-                    f"algoritma ini unggul {diff} poin."
-                )
+            runner_positives = [
+                o for o in runner_up.observations if o.score_delta > 0
+            ]
+            if runner_positives:
+                best_runner_obs = max(runner_positives, key=lambda o: o.score_delta)
+                runner_trait = _TRAIT_PHRASES.get(best_runner_obs.tag, "")
+                if runner_trait:
+                    reason += (
+                        f" {runner_up.algorithm} juga menunjukkan hasil kompetitif "
+                        f"dengan {runner_trait}."
+                    )
 
-        return " ".join(parts)
+        return reason
 
     @staticmethod
     def generate_strengths(winner: ScoredAlgorithm) -> List[str]:
         """Collect positive findings + algorithm characteristic."""
         strengths = []
 
-        # Observation-based strengths
         for obs in winner.observations:
             if obs.score_delta > 0:
                 strengths.append(obs.description)
 
-        # Algorithm-specific strength
         algo_strength = ALGO_STRENGTHS.get(winner.algorithm)
         if algo_strength:
             strengths.append(algo_strength)
 
-        return strengths if strengths else ["Tidak ada kelebihan signifikan yang terdeteksi."]
+        return strengths if strengths else ["Tidak ada kelebihan signifikan yang terdeteksi pada citra ini."]
 
     @staticmethod
     def generate_weaknesses(winner: ScoredAlgorithm) -> List[str]:
         """Collect negative findings + algorithm characteristic."""
         weaknesses = []
 
-        # Observation-based weaknesses
         for obs in winner.observations:
             if obs.score_delta < 0:
                 weaknesses.append(obs.description)
 
-        # Algorithm-specific weakness
         algo_weakness = ALGO_WEAKNESSES.get(winner.algorithm)
         if algo_weakness:
             weaknesses.append(algo_weakness)
 
-        return weaknesses if weaknesses else ["Tidak ada kelemahan signifikan yang terdeteksi."]
+        return weaknesses if weaknesses else ["Tidak ada kelemahan signifikan yang terdeteksi pada citra ini."]
 
     @staticmethod
     def generate_execution_summary(ranked: List[ScoredAlgorithm]) -> str:
@@ -100,17 +128,26 @@ class TemplateEngine:
 
     @staticmethod
     def generate_conclusion(winner: ScoredAlgorithm, ranked: List[ScoredAlgorithm]) -> str:
-        """Final one-sentence wrap-up based on observations."""
-        neg_count = sum(1 for o in winner.observations if o.score_delta < 0)
+        """Final image-specific wrap-up without exposing scores."""
         total_algos = len(ranked)
+        neg_count = sum(1 for o in winner.observations if o.score_delta < 0)
 
         if neg_count == 0:
             return (
-                f"Dari {total_algos} algoritma yang diuji, {winner.algorithm} "
-                "menunjukkan performa terbaik tanpa temuan negatif."
+                f"Dari {total_algos} algoritma yang diuji pada citra ini, {winner.algorithm} "
+                "menunjukkan kombinasi kualitas segmentasi dan performa terbaik "
+                "tanpa temuan negatif yang signifikan."
             )
 
         return (
-            f"Dari {total_algos} algoritma yang diuji, {winner.algorithm} "
-            f"memperoleh skor tertinggi meskipun memiliki {neg_count} catatan observasi."
+            f"Dari {total_algos} algoritma yang diuji pada citra ini, {winner.algorithm} "
+            "memberikan keseimbangan terbaik antara kualitas hasil dan kecepatan pemrosesan, "
+            f"dengan {neg_count} catatan yang perlu dipertimbangkan."
         )
+
+    @staticmethod
+    def _join_list(items: List[str]) -> str:
+        """Join list items with commas and 'dan' for the last item."""
+        if len(items) == 1:
+            return items[0]
+        return ", ".join(items[:-1]) + " dan " + items[-1]

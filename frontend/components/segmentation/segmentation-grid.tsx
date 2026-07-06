@@ -61,7 +61,7 @@ export function SegmentationGrid({ segmentation, metrics, onZoom }: Segmentation
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-12 flex flex-col gap-6">
+    <div className="w-full mt-12 flex flex-col gap-6">
       <div className="border-b border-border-custom pb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           Hasil Segmentasi Citra
@@ -99,7 +99,7 @@ export function SegmentationGrid({ segmentation, metrics, onZoom }: Segmentation
                   </span>
                 )}
               </div>
-              <div className="p-6 bg-secondary-bg/25 flex-1 flex justify-center items-center h-[220px] overflow-hidden">
+              <div className="p-6 bg-secondary-bg/25 flex-1 flex justify-center items-center h-[260px] overflow-hidden">
                 <div 
                   onClick={() => onZoom(imageSrc, algo.name)}
                   className="relative group cursor-zoom-in overflow-hidden rounded-md border border-border-custom bg-white shadow-sm"
@@ -108,7 +108,7 @@ export function SegmentationGrid({ segmentation, metrics, onZoom }: Segmentation
                   <img
                     src={imageSrc}
                     alt={`${algo.name} Mask`}
-                    className={`max-h-[180px] w-auto h-auto object-contain transition-all duration-300 ${
+                    className={`max-h-[220px] w-auto h-auto object-contain transition-all duration-300 ${
                       isPlaceholder ? "opacity-40 grayscale" : "opacity-100"
                     }`}
                   />

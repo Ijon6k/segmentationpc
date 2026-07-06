@@ -54,7 +54,7 @@ export default function Home() {
     <div className="min-h-screen bg-secondary-bg flex flex-col font-sans pb-16">
       <AppHeader />
 
-      <main className="flex-1 w-full max-w-4xl mx-auto py-12 px-6 flex flex-col justify-start">
+      <main className="flex-1 w-full max-w-[1600px] mx-auto py-12 px-6 lg:px-8 flex flex-col justify-start">
         {error && (
           <div className="w-full max-w-2xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-700 p-4 rounded-md flex items-start gap-3">
             <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
@@ -162,7 +162,7 @@ export default function Home() {
           onClick={() => setZoomImage(null)}
         >
           <div 
-            className="bg-background border border-border-custom rounded-md overflow-hidden max-w-3xl w-full flex flex-col cursor-default"
+            className="bg-background border border-border-custom rounded-md overflow-hidden max-w-4xl w-full flex flex-col cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-border-custom bg-secondary-bg flex items-center justify-between">

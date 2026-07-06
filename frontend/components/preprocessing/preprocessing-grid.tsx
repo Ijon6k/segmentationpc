@@ -9,7 +9,7 @@ interface PreprocessingGridProps {
 
 export function PreprocessingGrid({ grayscale, gaussianBlur, onZoom }: PreprocessingGridProps) {
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 flex flex-col gap-6">
+    <div className="w-full mt-8 flex flex-col gap-6">
       <div className="border-b border-border-custom pb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold tracking-tight text-foreground">
           Tahap Pra-pemrosesan (Pre-processing)
